@@ -14,6 +14,30 @@
   setTheme(localStorage.getItem("cedrai-blog-theme") || "dark");
   $("#theme-toggle").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
+  const aboutModal = $("#about-modal");
+  let aboutTrigger = null;
+  function openAbout(event) {
+    aboutTrigger = event.currentTarget;
+    aboutModal.hidden = false;
+    document.body.classList.add("modal-open");
+    $(".about-modal__close").focus();
+  }
+  function closeAbout() {
+    aboutModal.hidden = true;
+    document.body.classList.remove("modal-open");
+    aboutTrigger?.focus();
+  }
+  $("#about-open").addEventListener("click", openAbout);
+  $("#mobile-about").addEventListener("click", openAbout);
+  aboutModal.addEventListener("click", (event) => { if (event.target.closest("[data-about-close]")) closeAbout(); });
+  aboutModal.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeAbout();
+    if (event.key === "Tab") {
+      event.preventDefault();
+      $(".about-modal__close").focus();
+    }
+  });
+
   const dateText = (date) => date.replaceAll("-", ".");
   const postUrl = (slug) => `?post=${encodeURIComponent(slug)}`;
 
