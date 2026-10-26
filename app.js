@@ -5,7 +5,61 @@
   const ARTICLE_URL = "https://www.cedrai.info/api/blog-post";
   const $ = (selector) => document.querySelector(selector);
   const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  const state = { category: "전체", query: "" };
+  const TOPICS = [
+    ["Dreamhack", /dreamhack|드림핵/i],
+    ["BTLO", /\bbtlo\b|blue team labs/i],
+    ["CTF 대회", /\bctf\b|핵테온|hacktheon|\bcce\b|화이트햇|whitehat/i],
+    ["웹 보안", /웹|web|sqli|sql.?injection|xss|csrf|ssrf|injection|cookie|session|취약점/i],
+    ["포렌식", /포렌식|forensic|autopsy|volatility|wireshark|메모리 분석|디스크 분석/i],
+    ["시스템 보안", /pwn|시스템.?해킹|시스템.?보안|리버싱|reversing|buffer|overflow|shellcode|\belf\b/i],
+    ["암호학", /암호|crypto|\brsa\b|\baes\b|nonce/i],
+    ["Linux", /linux|리눅스|ubuntu|우분투|\bbash\b/i],
+    ["프로그래밍", /python|파이썬|javascript|typescript|프로그래밍|코딩|알고리즘|자료구조|\bc\+\+|\bjava\b|\breact\b/i],
+    ["전공 공부", /전공|운영체제|컴퓨터.?구조|데이터베이스|네트워크|이산.?수학|소프트웨어.?공학/i],
+  ];
+  const ARCHIVE_KEY = "cedrai-blog-archive";
+  const state = { category: "전체", topic: "전체", query: "" };
+  const isArchive = () => !new URLSearchParams(location.search).has("post");
+  let pendingRestore = null;
+  try {
+    const saved = history.state?.cedraiArchive || (location.hash === "#archive" && JSON.parse(sessionStorage.getItem(ARCHIVE_KEY)));
+    if (saved && isArchive()) {
+      state.category = ["전체", ...categories].includes(saved.category) ? saved.category : "전체";
+      state.topic = ["전체", "기타", ...TOPICS.map(([label]) => label)].includes(saved.topic) ? saved.topic : "전체";
+      state.query = typeof saved.query === "string" ? saved.query : "";
+      pendingRestore = saved;
+    }
+  } catch { /* Storage may be unavailable; filtering still works. */ }
+  $("#search-input").value = state.query;
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+  function saveArchive() {
+    if (!isArchive() || pendingRestore) return;
+    const snapshot = { ...state, scrollY: window.scrollY };
+    history.replaceState({ ...history.state, cedraiArchive: snapshot }, "");
+    try { sessionStorage.setItem(ARCHIVE_KEY, JSON.stringify(snapshot)); } catch { /* Optional persistence. */ }
+  }
+
+  async function restoreArchive() {
+    if (!pendingRestore || !isArchive()) return;
+    const saved = pendingRestore;
+    if (document.fonts) await document.fonts.ready;
+    requestAnimationFrame(() => {
+      if (pendingRestore !== saved) return;
+      pendingRestore = null;
+      window.scrollTo({ top: Number.isFinite(saved.scrollY) ? Math.max(0, saved.scrollY) : 0, behavior: "instant" });
+    });
+  }
+
+  function topicsFor(post) {
+    const text = [post.title, ...(post.tags || [])].join(" ");
+    const topics = TOPICS.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
+    return topics.length ? topics : ["기타"];
+  }
+
+  function categoryPosts() {
+    return posts.filter((post) => state.category === "전체" || post.category === state.category);
+  }
 
   function setTheme(theme) {
     document.documentElement.dataset.theme = theme;
@@ -45,13 +99,21 @@
 
   function renderFilters() {
     $("#category-filters").innerHTML = ["전체", ...categories].map((category) => `<button type="button" data-category="${escapeHTML(category)}" aria-pressed="${state.category === category}">${escapeHTML(category)}</button>`).join("");
+    const available = categoryPosts();
+    const counts = new Map();
+    for (const post of available) for (const topic of topicsFor(post)) counts.set(topic, (counts.get(topic) || 0) + 1);
+    const topics = ["전체", ...TOPICS.map(([label]) => label), "기타"].filter((topic) => topic === "전체" || counts.has(topic));
+    if (posts.length && !topics.includes(state.topic)) state.topic = "전체";
+    $("#topic-toolbar").hidden = counts.size === 0;
+    $("#topic-filters").innerHTML = topics.map((topic) => `<button type="button" data-topic="${escapeHTML(topic)}" aria-pressed="${state.topic === topic}">${escapeHTML(topic)} <span>${topic === "전체" ? available.length : counts.get(topic)}</span></button>`).join("");
   }
 
   function renderPosts() {
+    renderFilters();
     const query = state.query.trim().toLocaleLowerCase("ko");
-    const matches = posts.filter((post) => (state.category === "전체" || post.category === state.category) && (!query || [post.title, post.summary, post.category, ...(post.tags || [])].join(" ").toLocaleLowerCase("ko").includes(query)));
+    const matches = categoryPosts().filter((post) => (state.topic === "전체" || topicsFor(post).includes(state.topic)) && (!query || [post.title, post.summary, post.category, ...(post.tags || [])].join(" ").toLocaleLowerCase("ko").includes(query)));
     $("#entry-total").textContent = `${String(posts.length).padStart(2, "0")} ENTRIES`;
-    $("#result-label").textContent = state.category === "전체" ? "ALL ENTRIES" : state.category.toUpperCase();
+    $("#result-label").textContent = [state.category === "전체" ? "ALL ENTRIES" : state.category.toUpperCase(), state.topic === "전체" ? "" : state.topic].filter(Boolean).join(" / ");
     $("#result-count").textContent = `${String(matches.length).padStart(2, "0")} RESULTS`;
     $("#post-list").innerHTML = matches.map((post, index) => {
       const href = post.protected ? post.sourceUrl : postUrl(post.slug);
@@ -60,7 +122,6 @@
       return `<a class="post-row" href="${escapeHTML(href)}"${external} aria-label="${escapeHTML(post.title)} ${label}"><span class="post-number">${String(index + 1).padStart(2, "0")}</span><div class="post-content"><span class="post-category">↳ ${escapeHTML(post.category.toUpperCase())}${post.protected ? ' <span class="protected-mark">/ PROTECTED</span>' : ""}</span><h3>${escapeHTML(post.title)}</h3>${post.summary ? `<p>${escapeHTML(post.summary)}</p>` : ""}</div><div class="post-meta"><span>${dateText(post.date)}</span><span>${escapeHTML(post.readTime)}</span></div><span class="post-arrow">${post.protected ? "🔒" : "↗"}</span></a>`;
     }).join("");
     $("#empty-state").hidden = matches.length > 0;
-    renderFilters();
   }
 
   async function renderRoute() {
@@ -114,6 +175,7 @@
       if (!response.ok || !Array.isArray(data.posts)) throw new Error(data.error || "목록을 읽을 수 없습니다.");
       posts = data.posts;
       renderPosts();
+      restoreArchive();
       if (new URLSearchParams(location.search).has("post") && !$("#article-view .article-body")) renderRoute();
     } catch (error) {
       if (!posts.length) {
@@ -126,11 +188,30 @@
   $("#category-filters").addEventListener("click", (event) => {
     const button = event.target.closest("button[data-category]");
     if (!button) return;
+    pendingRestore = null;
     state.category = button.dataset.category;
+    state.topic = "전체";
     renderPosts();
+    saveArchive();
   });
-  $("#search-input").addEventListener("input", (event) => { state.query = event.target.value; renderPosts(); });
-  $("#reset-filters").addEventListener("click", () => { state.category = "전체"; state.query = ""; $("#search-input").value = ""; renderPosts(); $("#search-input").focus(); });
+  $("#topic-filters").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-topic]");
+    if (!button) return;
+    pendingRestore = null;
+    state.topic = button.dataset.topic;
+    renderPosts();
+    saveArchive();
+  });
+  $("#search-input").addEventListener("input", (event) => { pendingRestore = null; state.query = event.target.value; renderPosts(); saveArchive(); });
+  $("#reset-filters").addEventListener("click", () => { pendingRestore = null; state.category = "전체"; state.topic = "전체"; state.query = ""; $("#search-input").value = ""; renderPosts(); $("#search-input").focus(); saveArchive(); });
+  $("#post-list").addEventListener("click", saveArchive);
+  window.addEventListener("pagehide", saveArchive);
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && isArchive()) {
+      pendingRestore = history.state?.cedraiArchive || null;
+      restoreArchive();
+    }
+  });
   document.addEventListener("keydown", (event) => {
     if (event.key === "/" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName) && !new URLSearchParams(location.search).has("post")) { event.preventDefault(); $("#search-input").focus(); }
     if (event.key === "Escape" && document.activeElement === $("#search-input")) { $("#search-input").blur(); }
