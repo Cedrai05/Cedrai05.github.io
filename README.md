@@ -10,10 +10,10 @@ GitHub Pages는 저장소의 정적 파일을 웹사이트로 공개하는 GitHu
 
 ## 배포
 
-1. GitHub 계정 `rinhye05`에서 공개 저장소 `rinhye05.github.io`를 만듭니다.
+1. GitHub 계정 `Cedrai05`에서 공개 저장소 `cedrai05.github.io`를 만듭니다.
 2. 이 폴더의 파일을 저장소 루트에 올리고 `main` 브랜치에 반영합니다.
 3. 저장소 **Settings → Pages → Build and deployment**에서 **Deploy from a branch**, `main`, `/(root)`를 선택합니다.
-4. 배포가 끝나면 `https://rinhye05.github.io/`에서 확인합니다.
+4. 배포가 끝나면 `https://cedrai05.github.io/`에서 확인합니다.
 
 별도 빌드 단계나 패키지 설치가 필요하지 않습니다. 프로젝트 저장소로 배포해도 상대 경로를 사용하므로 정상 동작합니다.
 
@@ -31,4 +31,4 @@ GitHub Pages는 저장소의 정적 파일을 웹사이트로 공개하는 GitHu
 
 ## 포트폴리오 연결
 
-블로그의 상단, 프로필, 하단에는 포트폴리오와 프로젝트 페이지 링크가 있습니다. 포트폴리오 저장소 `rinhye05/cedrai-portfolio`의 **BLOG** 메뉴와 `/blog` 주소도 `https://rinhye05.github.io/`로 연결했습니다. `cedrai.info` 도메인은 기존 포트폴리오에 연결되어 있으므로 블로그에 같은 도메인을 설정하지 마세요. 블로그 전용 `blog.cedrai.info`를 쓰려면 별도 DNS 설정과 Pages의 사용자 정의 도메인 설정이 필요합니다.
+블로그의 상단, 프로필, 하단에는 포트폴리오와 프로젝트 페이지 링크가 있습니다. 포트폴리오 저장소 `Cedrai05/cedrai-portfolio`의 **BLOG** 메뉴와 `/blog` 주소도 `https://cedrai05.github.io/`로 연결했습니다. `cedrai.info` 도메인은 기존 포트폴리오에 연결되어 있으므로 블로그에 같은 도메인을 설정하지 마세요. 블로그 전용 `blog.cedrai.info`를 쓰려면 별도 DNS 설정과 Pages의 사용자 정의 도메인 설정이 필요합니다.
