@@ -1,6 +1,6 @@
 # Cédrai / Field Notes
 
-[Cédrai 포트폴리오](https://www.cedrai.info/)의 디자인을 이어받은 GitHub Pages용 정적 기술 블로그입니다. 개발, CTF/Wargame, BugbBounty, 블로그/기술문서, 논문/컨퍼런스, 공모전/자격증의 여섯 카테고리로 구성했습니다.
+[Cédrai 포트폴리오](https://www.cedrai.info/)의 디자인을 이어받은 GitHub Pages용 기술 블로그입니다. 개발, CTF/Wargame, BugbBounty, 블로그/기술문서, 논문/컨퍼런스, 공모전/자격증의 여섯 카테고리로 구성했습니다. 글은 티스토리에서 읽어오므로 새 글을 올려도 GitHub 저장소를 다시 수정할 필요가 없습니다.
 
 ## GitHub Pages란?
 
@@ -17,22 +17,13 @@ GitHub Pages는 저장소의 정적 파일을 웹사이트로 공개하는 GitHu
 
 별도 빌드 단계나 패키지 설치가 필요하지 않습니다. 프로젝트 저장소로 배포해도 상대 경로를 사용하므로 정상 동작합니다.
 
-## 새 글 추가
+## 티스토리 연동
 
-`posts.js`의 `BLOG_POSTS` 배열에 객체를 추가합니다. `slug`는 글 주소의 `?post=` 값으로 쓰이므로 영문 소문자와 하이픈을 권장합니다. `category`는 `BLOG_CATEGORIES`의 여섯 값 중 하나여야 합니다. 본문은 `content`에 HTML 문자열로 작성할 수 있습니다. 이 파일은 저장소 관리자가 직접 편집하는 신뢰된 콘텐츠만 넣어야 합니다.
+글 목록은 포트폴리오의 [`/api/blog-feed`](https://www.cedrai.info/api/blog-feed)에서 매번 새로 읽습니다. 페이지를 다시 열거나 활성화하면 갱신하며, 열어둔 페이지는 1분마다 갱신합니다. 티스토리의 분류를 블로그의 여섯 카테고리로 변환하는 코드는 포트폴리오 저장소의 `app/api/blog-feed/route.ts`에 있습니다. 새 카테고리를 추가하면 이 매핑도 검토하세요.
 
-```js
-{
-  slug: "my-new-note",
-  title: "새 기록 제목",
-  category: "개발",
-  date: "2026-10-26",
-  readTime: "3 MIN READ",
-  summary: "목록에 표시할 한 줄 소개",
-  tags: ["JavaScript"],
-  content: `<p>본문 첫 문단입니다.</p>`
-}
-```
+공개글은 [`/api/blog-post`](https://www.cedrai.info/api/blog-post?id=113)를 통해 본문을 불러와 블로그 안에 표시합니다. 이미지는 원문을 읽을 때마다 티스토리의 현재 주소를 사용합니다. 보호글은 **제목과 날짜만** 목록에 표시하고 클릭하면 티스토리 원문으로 이동합니다. 보호글 본문과 비밀번호는 이 저장소에 넣지 않습니다.
+
+이 연동은 포트폴리오의 Vercel 서버가 동작해야 합니다. 티스토리 화면 구조가 바뀌면 두 API의 글 추출 코드를 수정해야 할 수 있습니다.
 
 ## 포트폴리오 연결
 
