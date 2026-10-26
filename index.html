@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0e11" />
+    <meta name="description" content="Cédrai의 개발, CTF, 보안 연구와 기록을 모은 기술 블로그." />
+    <title>Cédrai / Field Notes</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./posts.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <div class="site-shell">
+      <aside class="profile-panel" aria-label="프로필">
+        <div class="profile-top"><span>PROFILE / 001</span><span class="profile-dot"></span></div>
+        <div class="profile-avatar" aria-hidden="true"><span>❮</span><strong>C</strong><span>⁄❯</span></div>
+        <h2>Cédrai<span>.</span></h2>
+        <p class="profile-role">Computer Engineering<br />Security learner · CTF</p>
+        <div class="profile-rule"></div>
+        <p class="profile-intro">디지털 포렌식과 웹 보안을 공부하며, 배운 것을 기록하고 직접 만들어봅니다.</p>
+        <a class="profile-about" href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer">ABOUT ME <span>↗</span></a>
+        <div class="profile-status"><i></i> AVAILABLE FOR LEARNING</div>
+        <div class="profile-bottom"><span>© 2026 CÉDRAI</span><span>SECURITY / BUILD / WRITE</span></div>
+      </aside>
+
+      <div class="page-column">
+        <header class="site-header">
+          <a class="brand" href="./" aria-label="Cédrai 블로그 홈">❮Cédrai/❯<span>_LOG</span></a>
+          <nav class="header-nav" aria-label="주 메뉴">
+            <a class="active" href="./">BLOG</a>
+            <a href="https://www.cedrai.info/projects" target="_blank" rel="noopener noreferrer">PROJECTS ↗</a>
+            <a href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer">PORTFOLIO ↗</a>
+          </nav>
+          <div class="header-actions"><span class="system-indicator"><i></i> SYS ONLINE</span><button id="theme-toggle" class="icon-button" type="button" aria-label="테마 전환" title="테마 전환">☀</button></div>
+        </header>
+
+        <main id="main">
+          <div id="home-view">
+            <section class="hero">
+              <div class="hero-content">
+                <p class="eyebrow">HANDLE: <strong>CÉDRAI</strong> &nbsp;//&nbsp; KONKUK UNIV. GLOCAL · COMPUTER ENGINEERING</p>
+                <div class="hero-title-row"><h1>Field<br /><span>Notes<span class="period">.</span></span></h1><span class="hero-index">/ 001 — 006</span></div>
+                <p class="hero-description">배운 것을 기록하고, 풀어낸 과정을 남깁니다.<br />개발과 보안 사이에서 쌓아가는 <em>나만의 아카이브.</em></p>
+                <div class="hero-cta"><a href="#archive" class="primary-button">./EXPLORE_LOGS <span>↘</span></a><a href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer" class="secondary-button">VIEW PORTFOLIO ↗</a></div>
+              </div>
+              <div class="hero-graphic" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div><div class="orbit-cross horizontal"></div><div class="orbit-cross vertical"></div><div class="orbit-core"></div><span>INDEXING KNOWLEDGE...</span></div>
+              <div class="hero-foot"><span>SCROLL TO EXPLORE ↓</span><span>BREAK → UNDERSTAND → BUILD</span></div>
+            </section>
+
+            <section class="archive-section" id="archive">
+              <div class="section-kicker"><span class="kicker-pill">ARCHIVE</span><span class="kicker-line"></span><span>SYS://ALL_ENTRIES</span></div>
+              <div class="section-heading"><div><p class="small-label">01 / INDEX</p><h2>Explore the logs<span>.</span></h2><p>관심 분야별로 정리한 생각과 실험의 기록입니다.</p></div><span class="entry-total" id="entry-total"></span></div>
+              <div class="archive-toolbar"><div id="category-filters" class="category-filters" aria-label="카테고리 필터"></div><label class="search-box"><span>⌕</span><input id="search-input" type="search" placeholder="기록 검색..." aria-label="기록 검색" autocomplete="off" /><kbd>/</kbd></label></div>
+              <div class="result-line"><span id="result-label">ALL ENTRIES</span><span id="result-count"></span></div>
+              <div id="post-list" class="post-list"></div>
+              <div id="empty-state" class="empty-state" hidden><span>NO SIGNAL FOUND</span><h3>일치하는 기록이 없습니다.</h3><p>검색어나 카테고리를 바꿔보세요.</p><button id="reset-filters" type="button">필터 초기화 ↗</button></div>
+            </section>
+
+            <section class="connect-section"><div><p class="small-label">02 / CONNECT</p><h2>More than notes<span>.</span></h2><p>프로젝트와 활동의 전체 기록은 포트폴리오에서 확인할 수 있습니다.</p></div><a href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer">OPEN PORTFOLIO <span>↗</span></a></section>
+          </div>
+
+          <article id="article-view" class="article-view" hidden></article>
+        </main>
+
+        <footer class="site-footer"><span>© 2026 Cédrai — FIELD NOTES</span><div><a href="https://github.com/rinhye05" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer">PORTFOLIO ↗</a></div><span>BREAK → UNDERSTAND → BUILD</span></footer>
+      </div>
+    </div>
+  </body>
+</html>
