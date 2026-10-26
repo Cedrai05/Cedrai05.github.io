@@ -5,18 +5,6 @@
   const ARTICLE_URL = "https://www.cedrai.info/api/blog-post";
   const $ = (selector) => document.querySelector(selector);
   const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  const TOPICS = [
-    ["Dreamhack", /dreamhack|드림핵/i],
-    ["BTLO", /\bbtlo\b|blue team labs/i],
-    ["CTF 대회", /\bctf\b|핵테온|hacktheon|\bcce\b|화이트햇|whitehat/i],
-    ["웹 보안", /웹|web|sqli|sql.?injection|xss|csrf|ssrf|injection|cookie|session|취약점/i],
-    ["포렌식", /포렌식|forensic|autopsy|volatility|wireshark|메모리 분석|디스크 분석/i],
-    ["시스템 보안", /pwn|시스템.?해킹|시스템.?보안|리버싱|reversing|buffer|overflow|shellcode|\belf\b/i],
-    ["암호학", /암호|crypto|\brsa\b|\baes\b|nonce/i],
-    ["Linux", /linux|리눅스|ubuntu|우분투|\bbash\b/i],
-    ["프로그래밍", /python|파이썬|javascript|typescript|프로그래밍|코딩|알고리즘|자료구조|\bc\+\+|\bjava\b|\breact\b/i],
-    ["전공 공부", /전공|운영체제|컴퓨터.?구조|데이터베이스|네트워크|이산.?수학|소프트웨어.?공학/i],
-  ];
   const ARCHIVE_KEY = "cedrai-blog-archive";
   const state = { category: "전체", topic: "전체", query: "" };
   const isArchive = () => !new URLSearchParams(location.search).has("post");
@@ -25,7 +13,7 @@
     const saved = history.state?.cedraiArchive || (location.hash === "#archive" && JSON.parse(sessionStorage.getItem(ARCHIVE_KEY)));
     if (saved && isArchive()) {
       state.category = ["전체", ...categories].includes(saved.category) ? saved.category : "전체";
-      state.topic = ["전체", "기타", ...TOPICS.map(([label]) => label)].includes(saved.topic) ? saved.topic : "전체";
+      state.topic = typeof saved.topic === "string" ? saved.topic : "전체";
       state.query = typeof saved.query === "string" ? saved.query : "";
       pendingRestore = saved;
     }
@@ -51,10 +39,8 @@
     });
   }
 
-  function topicsFor(post) {
-    const text = [post.title, ...(post.tags || [])].join(" ");
-    const topics = TOPICS.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
-    return topics.length ? topics : ["기타"];
+  function topicFor(post) {
+    return typeof post.sourceCategory === "string" ? post.sourceCategory : "";
   }
 
   function categoryPosts() {
@@ -101,8 +87,11 @@
     $("#category-filters").innerHTML = ["전체", ...categories].map((category) => `<button type="button" data-category="${escapeHTML(category)}" aria-pressed="${state.category === category}">${escapeHTML(category)}</button>`).join("");
     const available = categoryPosts();
     const counts = new Map();
-    for (const post of available) for (const topic of topicsFor(post)) counts.set(topic, (counts.get(topic) || 0) + 1);
-    const topics = ["전체", ...TOPICS.map(([label]) => label), "기타"].filter((topic) => topic === "전체" || counts.has(topic));
+    for (const post of available) {
+      const topic = topicFor(post);
+      if (topic) counts.set(topic, (counts.get(topic) || 0) + 1);
+    }
+    const topics = ["전체", ...[...counts.keys()].sort((a, b) => a.localeCompare(b, "ko"))];
     if (posts.length && !topics.includes(state.topic)) state.topic = "전체";
     $("#topic-toolbar").hidden = counts.size === 0;
     $("#topic-filters").innerHTML = topics.map((topic) => `<button type="button" data-topic="${escapeHTML(topic)}" aria-pressed="${state.topic === topic}">${escapeHTML(topic)} <span>${topic === "전체" ? available.length : counts.get(topic)}</span></button>`).join("");
@@ -111,7 +100,7 @@
   function renderPosts() {
     renderFilters();
     const query = state.query.trim().toLocaleLowerCase("ko");
-    const matches = categoryPosts().filter((post) => (state.topic === "전체" || topicsFor(post).includes(state.topic)) && (!query || [post.title, post.summary, post.category, ...(post.tags || [])].join(" ").toLocaleLowerCase("ko").includes(query)));
+    const matches = categoryPosts().filter((post) => (state.topic === "전체" || topicFor(post) === state.topic) && (!query || [post.title, post.summary, post.category, topicFor(post), ...(post.tags || [])].join(" ").toLocaleLowerCase("ko").includes(query)));
     $("#entry-total").textContent = `${String(posts.length).padStart(2, "0")} ENTRIES`;
     $("#result-label").textContent = [state.category === "전체" ? "ALL ENTRIES" : state.category.toUpperCase(), state.topic === "전체" ? "" : state.topic].filter(Boolean).join(" / ");
     $("#result-count").textContent = `${String(matches.length).padStart(2, "0")} RESULTS`;
