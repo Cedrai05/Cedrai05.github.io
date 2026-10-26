@@ -36,4 +36,4 @@ GitHub Pages는 저장소의 정적 파일을 웹사이트로 공개하는 GitHu
 
 ## 포트폴리오 연결
 
-블로그의 상단, 프로필, 하단에는 포트폴리오와 프로젝트 페이지 링크가 있습니다. 포트폴리오의 기존 **BLOG** 메뉴를 새 블로그로 연결하려면 포트폴리오 저장소 `rinhye05/cedrai-portfolio`의 해당 메뉴 주소를 배포된 GitHub Pages 주소로 바꾸면 됩니다. `cedrai.info` 도메인은 기존 포트폴리오에 연결되어 있으므로 블로그에 같은 도메인을 설정하지 마세요. 블로그 전용 `blog.cedrai.info`를 쓰려면 별도 DNS 설정과 Pages의 사용자 정의 도메인 설정이 필요합니다.
+블로그의 상단, 프로필, 하단에는 포트폴리오와 프로젝트 페이지 링크가 있습니다. 포트폴리오 저장소 `rinhye05/cedrai-portfolio`의 **BLOG** 메뉴와 `/blog` 주소도 `https://rinhye05.github.io/`로 연결했습니다. `cedrai.info` 도메인은 기존 포트폴리오에 연결되어 있으므로 블로그에 같은 도메인을 설정하지 마세요. 블로그 전용 `blog.cedrai.info`를 쓰려면 별도 DNS 설정과 Pages의 사용자 정의 도메인 설정이 필요합니다.
