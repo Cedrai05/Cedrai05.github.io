@@ -1,6 +1,8 @@
 (() => {
-  let posts = window.BLOG_POSTS;
   const categories = window.BLOG_CATEGORIES;
+  const topicGroups = window.BLOG_TOPIC_GROUPS || {};
+  const postOverrides = window.BLOG_POST_OVERRIDES || {};
+  let posts = window.BLOG_POSTS.map(normalizePost);
   const FEED_URL = "https://www.cedrai.info/api/blog-feed";
   const ARTICLE_URL = "https://www.cedrai.info/api/blog-post";
   const $ = (selector) => document.querySelector(selector);
@@ -12,7 +14,8 @@
   try {
     const saved = history.state?.cedraiArchive || (location.hash === "#archive" && JSON.parse(sessionStorage.getItem(ARCHIVE_KEY)));
     if (saved && isArchive()) {
-      state.category = ["전체", ...categories].includes(saved.category) ? saved.category : "전체";
+      const category = normalizeCategory(saved.category);
+      state.category = ["전체", ...categories].includes(category) ? category : "전체";
       state.topic = typeof saved.topic === "string" ? saved.topic : "전체";
       state.query = typeof saved.query === "string" ? saved.query : "";
       pendingRestore = saved;
@@ -39,8 +42,33 @@
     });
   }
 
+  function normalizeCategory(category) {
+    return category === "BugbBounty" ? "Bug Bounty" : category;
+  }
+
+  function normalizePost(post) {
+    const override = postOverrides[post.slug];
+    const category = !post.sourceCategory && override?.category ? override.category : normalizeCategory(post.category);
+    return { ...post, category };
+  }
+
   function topicFor(post) {
-    return typeof post.sourceCategory === "string" ? post.sourceCategory : "";
+    const parts = (post.sourceCategory || "").split(/\s*\/\s*/).map((part) => part.toLowerCase());
+    if (post.category === "블로그/기술문서" && parts.some((part) => part === "seku" || part === "sekurity")) return "seKUrity";
+    const topics = topicGroups[post.category] || [];
+    const mapped = topics.find((topic) => parts.includes(topic.toLowerCase()));
+    const fallback = postOverrides[post.slug]?.topic;
+    return mapped || (topics.includes(fallback) ? fallback : "");
+  }
+
+  function comparePosts(a, b) {
+    const topics = topicGroups[state.category];
+    if (topics) {
+      const rank = (post) => { const index = topics.indexOf(topicFor(post)); return index === -1 ? topics.length : index; };
+      const difference = rank(a) - rank(b);
+      if (difference) return difference;
+    }
+    return (b.date || "").localeCompare(a.date || "") || b.slug.localeCompare(a.slug, "en", { numeric: true });
   }
 
   function categoryPosts() {
@@ -91,16 +119,20 @@
       const topic = topicFor(post);
       if (topic) counts.set(topic, (counts.get(topic) || 0) + 1);
     }
-    const topics = ["전체", ...[...counts.keys()].sort((a, b) => a.localeCompare(b, "ko"))];
-    if (posts.length && !topics.includes(state.topic)) state.topic = "전체";
-    $("#topic-toolbar").hidden = counts.size === 0;
-    $("#topic-filters").innerHTML = topics.map((topic) => `<button type="button" data-topic="${escapeHTML(topic)}" aria-pressed="${state.topic === topic}">${escapeHTML(topic)} <span>${topic === "전체" ? available.length : counts.get(topic)}</span></button>`).join("");
+    const configured = topicGroups[state.category];
+    const topics = ["전체", ...(configured || [...new Set(Object.values(topicGroups).flat())].filter((topic) => counts.has(topic)))];
+    if (posts.length && !topics.includes(state.topic)) {
+      const previous = available.find((post) => post.sourceCategory === state.topic);
+      state.topic = previous ? topicFor(previous) || "전체" : "전체";
+    }
+    $("#topic-toolbar").hidden = !configured && counts.size === 0;
+    $("#topic-filters").innerHTML = topics.map((topic) => `<button type="button" data-topic="${escapeHTML(topic)}" aria-pressed="${state.topic === topic}">${escapeHTML(topic)} <span>${topic === "전체" ? available.length : counts.get(topic) || 0}</span></button>`).join("");
   }
 
   function renderPosts() {
     renderFilters();
     const query = state.query.trim().toLocaleLowerCase("ko");
-    const matches = categoryPosts().filter((post) => (state.topic === "전체" || topicFor(post) === state.topic) && (!query || [post.title, post.summary, post.category, topicFor(post), ...(post.tags || [])].join(" ").toLocaleLowerCase("ko").includes(query)));
+    const matches = categoryPosts().filter((post) => (state.topic === "전체" || topicFor(post) === state.topic) && (!query || [post.title, post.summary, post.category, topicFor(post), post.sourceCategory, ...(post.tags || [])].join(" ").toLocaleLowerCase("ko").includes(query))).sort(comparePosts);
     $("#entry-total").textContent = `${String(posts.length).padStart(2, "0")} ENTRIES`;
     $("#result-label").textContent = [state.category === "전체" ? "ALL ENTRIES" : state.category.toUpperCase(), state.topic === "전체" ? "" : state.topic].filter(Boolean).join(" / ");
     $("#result-count").textContent = `${String(matches.length).padStart(2, "0")} RESULTS`;
@@ -108,7 +140,7 @@
       const href = post.protected ? post.sourceUrl : postUrl(post.slug);
       const external = post.protected ? ' target="_blank" rel="noopener noreferrer"' : "";
       const label = post.protected ? "보호글 · 티스토리에서 열기" : "읽기";
-      return `<a class="post-row" href="${escapeHTML(href)}"${external} aria-label="${escapeHTML(post.title)} ${label}"><span class="post-number">${String(index + 1).padStart(2, "0")}</span><div class="post-content"><span class="post-category">↳ ${escapeHTML(post.category.toUpperCase())}${post.protected ? ' <span class="protected-mark">/ PROTECTED</span>' : ""}</span><h3>${escapeHTML(post.title)}</h3>${post.summary ? `<p>${escapeHTML(post.summary)}</p>` : ""}</div><div class="post-meta"><span>${dateText(post.date)}</span><span>${escapeHTML(post.readTime)}</span></div><span class="post-arrow">${post.protected ? "🔒" : "↗"}</span></a>`;
+      return `<a class="post-row" href="${escapeHTML(href)}"${external} aria-label="${escapeHTML(post.title)} ${label}"><span class="post-number">${String(index + 1).padStart(2, "0")}</span><div class="post-content"><span class="post-category">↳ ${escapeHTML(post.category.toUpperCase())}${topicFor(post) ? ` / ${escapeHTML(topicFor(post))}` : ""}${post.protected ? ' <span class="protected-mark">/ PROTECTED</span>' : ""}</span><h3>${escapeHTML(post.title)}</h3>${post.summary ? `<p>${escapeHTML(post.summary)}</p>` : ""}</div><div class="post-meta"><span>${dateText(post.date)}</span><span>${escapeHTML(post.readTime)}</span></div><span class="post-arrow">${post.protected ? "🔒" : "↗"}</span></a>`;
     }).join("");
     $("#empty-state").hidden = matches.length > 0;
   }
@@ -162,7 +194,7 @@
       const response = await fetch(FEED_URL, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !Array.isArray(data.posts)) throw new Error(data.error || "목록을 읽을 수 없습니다.");
-      posts = data.posts;
+      posts = data.posts.map(normalizePost);
       renderPosts();
       restoreArchive();
       if (new URLSearchParams(location.search).has("post") && !$("#article-view .article-body")) renderRoute();
