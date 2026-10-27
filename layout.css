@@ -218,3 +218,13 @@ body::before {
   .glitch::before, .glitch::after { display: none; }
   .scanner-sweep, .typed-cursor::after, .profile-status i, .system-indicator i { animation: none; }
 }
+
+/* Native article unlock shares the active theme. */
+.protected-form { margin: 3rem 0; padding: 2rem; border: 1px solid var(--line); background: var(--surface); color: var(--text-strong); }
+.protected-form label { display: block; margin: 1.5rem 0 .6rem; font-size: .9rem; }
+.protected-form__controls { display: flex; gap: .75rem; max-width: 480px; }
+.protected-form input { min-width: 0; flex: 1; padding: .8rem; border: 1px solid var(--line); background: var(--bg); color: var(--text-strong); font: inherit; }
+.protected-form button { padding: .8rem 1rem; border: 1px solid var(--accent); background: var(--accent); color: var(--bg); cursor: pointer; font: inherit; }
+.protected-form button:disabled { opacity: .6; cursor: wait; }
+.protected-form [role="status"] { min-height: 1.5em; margin-top: 1rem; color: var(--muted); }
+.article-body [data-native-src]:not([src]) { min-height: 80px; }
