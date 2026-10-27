@@ -1,10 +1,10 @@
 # Cédrai / Field Notes
 
-디지털 포렌식과 웹 보안을 공부하며 남기는 개인 기술 블로그입니다.
+디지털 포렌식과 웹 보안을 공부하며 남기는 개인 기술 블로그입니다. 포트폴리오와 합쳐 [cedrai.info/blog](https://www.cedrai.info/blog)에서 운영합니다. 기존 github.io 주소로 들어오면 보고 있던 글 주소를 유지해 새 블로그로 이동합니다.
 
 문제를 풀면서 알게 된 것, 수업이나 개인 공부 중에 정리한 내용, 직접 만들어본 것들을 모읍니다. 답을 구하는 데서 끝내지 않고 어떤 과정을 거쳐 이해했는지 함께 적어두려고 합니다. 나중에 비슷한 문제를 만났을 때 다시 꺼내볼 수 있는 노트가 되었으면 합니다.
 
-[블로그 둘러보기](https://cedrai05.github.io/) · [포트폴리오](https://www.cedrai.info/) · [GitHub](https://github.com/Cedrai05) · [티스토리](https://rinhye05.tistory.com/)
+[블로그 둘러보기](https://www.cedrai.info/blog) · [포트폴리오](https://www.cedrai.info/) · [GitHub](https://github.com/Cedrai05) · [티스토리](https://rinhye05.tistory.com/)
 
 ## 어떤 기록을 남기나요?
 
@@ -41,8 +41,8 @@
 
 ## 사이트 구성
 
-HTML, CSS, JavaScript로 만들었고 GitHub Pages에서 운영합니다. 별도의 패키지 설치나 빌드 과정은 없습니다. 포트폴리오와 오가며 볼 수 있도록 화면의 색상과 분위기도 맞췄습니다.
+현재 사이트 코드는 [cedrai-portfolio](https://github.com/Cedrai05/cedrai-portfolio)에 있습니다. 포트폴리오의 Next.js 앱 안에서 `/blog`를 운영하며 프로필, 로그인, 테마를 함께 사용합니다. 글의 분류와 검색, 목록 복원, 보호글 비밀번호 열람은 그대로 이어집니다.
 
-화면은 `index.html`, `styles.css`, `layout.css`, `effects.js`에서, 글 목록과 검색·읽기는 `app.js`에서 관리합니다. `posts.js`에는 글 목록과 카테고리가 있고, 공개 본문은 `content/posts/`, 첨부파일은 `content/media/`에 저장합니다. 보호글 열람 API는 포트폴리오 저장소의 `app/api/native-blog/`에서 운영합니다.
+이 저장소의 `index.html`은 새 주소로 연결하는 역할을 합니다. `content/`와 기존 화면 소스는 이관 당시 기록으로 남겨두었습니다. 현재 화면은 포트폴리오 저장소의 `app/blog/`와 `components/blog/`, 공개 본문·첨부파일은 `public/blog-content/`, 보호글 API는 `app/api/native-blog/`에서 관리합니다.
 
 포트폴리오에는 프로젝트와 활동을 정리하고, 이곳에는 그 사이에서 배우고 고민한 과정을 남깁니다.
