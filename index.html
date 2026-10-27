@@ -3,22 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b0e11" />
+    <meta name="theme-color" content="#0d0e0c" />
     <meta name="description" content="Cédrai의 개발, CTF, 보안 연구와 기록을 모은 기술 블로그." />
     <title>Cédrai / Field Notes</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hack-font@3/build/web/hack.css" />
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./layout.css?v=20261027-portfolio" />
     <script defer src="./posts.js?v=20261027-topic-groups"></script>
     <script defer src="./app.js?v=20261027-topic-groups"></script>
+    <script defer src="./effects.js?v=20261027-portfolio"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <div class="site-shell">
       <aside class="profile-panel" aria-label="프로필">
-        <div class="profile-top"><span>PROFILE / 001</span><span class="profile-dot"></span></div>
+        <div class="profile-inner">
+        <div class="profile-top"><span>PROFILE / 001</span></div>
         <div class="profile-avatar"><img src="./profile-photo.jpeg" alt="Cédrai 프로필 이미지" width="736" height="820" /></div>
         <h2>Cédrai<span>.</span></h2>
         <p class="profile-role">Computer Engineering<br />Security learner · CTF</p>
@@ -26,7 +30,7 @@
         <p class="profile-intro">디지털 포렌식과 웹 보안을 공부하며, 배운 것을 기록하고 직접 만들어봅니다.</p>
         <button class="profile-about" id="about-open" type="button" aria-haspopup="dialog">ABOUT ME <span>↗</span></button>
         <div class="profile-status"><i></i> AVAILABLE FOR LEARNING</div>
-        <div class="profile-bottom"><span>© 2026 CÉDRAI</span><span>SECURITY / BUILD / WRITE</span></div>
+        </div>
       </aside>
 
       <div class="about-modal" id="about-modal" role="dialog" aria-modal="true" aria-label="About Cédrai" hidden>
@@ -47,27 +51,29 @@
       <div class="page-column">
         <header class="site-header">
           <a class="brand" href="./" aria-label="Cédrai 블로그 홈">❮Cédrai/❯<span>_LOG</span></a>
-          <nav class="header-nav" aria-label="주 메뉴">
+          <nav class="header-nav" id="header-navigation" aria-label="주 메뉴">
             <a class="active" href="./">BLOG</a>
             <button id="mobile-about" type="button" aria-haspopup="dialog">ABOUT</button>
             <a href="https://github.com/Cedrai05" target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
             <a href="https://www.cedrai.info/projects" target="_blank" rel="noopener noreferrer">PROJECTS ↗</a>
             <a href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer">PORTFOLIO ↗</a>
           </nav>
-          <div class="header-actions"><span class="system-indicator"><i></i> SYS ONLINE</span><button id="theme-toggle" class="icon-button" type="button" aria-label="테마 전환" title="테마 전환">☀</button></div>
+          <div class="header-actions"><span class="system-indicator"><i></i> SYS ONLINE</span><button id="theme-toggle" class="icon-button" type="button" aria-label="테마 전환" title="테마 전환">☀</button><button id="menu-toggle" class="icon-button menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="header-navigation">☰</button></div>
         </header>
 
         <main id="main">
           <div id="home-view">
             <section class="hero">
+              <div class="hero-grid">
               <div class="hero-content">
-                <p class="eyebrow">HANDLE: <strong>CÉDRAI</strong> &nbsp;//&nbsp; KONKUK UNIV. GLOCAL · COMPUTER ENGINEERING</p>
-                <div class="hero-title-row"><h1>Field<br /><span>Notes<span class="period">.</span></span></h1><span class="hero-index">/ 001 — 006</span></div>
+                <p class="eyebrow">HANDLE: <strong>CÉDRAI</strong> // KONKUK UNIV. GLOCAL · COMPUTER ENGINEERING</p>
+                <h1 aria-label="Field Notes."><span class="glitch" data-text="Field" aria-hidden="true">Field</span> <span class="glitch hero-title-accent" data-text="Notes." aria-hidden="true">Notes<span class="period">.</span></span></h1>
+                <div class="hero-typing"><span class="visually-hidden">Computer Engineering · CTF · Forensic · Web Hacking · Reversing · Security · Python</span><span id="hero-typed" aria-hidden="true">Computer Engineering</span><span class="typed-cursor" aria-hidden="true"></span></div>
                 <p class="hero-description">배운 것을 기록하고, 풀어낸 과정을 남깁니다.<br />개발과 보안 사이에서 쌓아가는 <em>나만의 아카이브.</em></p>
                 <div class="hero-cta"><a href="#archive" class="primary-button">./EXPLORE_LOGS <span>↘</span></a><a href="https://www.cedrai.info/" target="_blank" rel="noopener noreferrer" class="secondary-button">VIEW PORTFOLIO ↗</a></div>
               </div>
-              <div class="hero-graphic" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div><div class="orbit-cross horizontal"></div><div class="orbit-cross vertical"></div><div class="orbit-core"></div><span>INDEXING KNOWLEDGE...</span></div>
-              <div class="hero-foot"><span>SCROLL TO EXPLORE ↓</span><span>BREAK → UNDERSTAND → BUILD</span></div>
+              <div class="hero-graphic" aria-hidden="true"><div class="scanner-ring"></div><div class="scanner-ring scanner-ring-two"></div><div class="scanner-ring scanner-ring-three"></div><div class="scanner-ring scanner-ring-four"></div><div class="scanner-sweep"></div><div class="scanner-cross scanner-horizontal"></div><div class="scanner-cross scanner-vertical"></div><div class="scanner-core"></div><span class="scanner-caption">SCANNING...</span></div>
+              </div>
             </section>
 
             <section class="archive-section" id="archive">
