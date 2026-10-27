@@ -166,6 +166,22 @@ body::before {
 
 .archive-section { padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 5vw, 5rem) 105px; }
 .post-content, .article-body, .article-view h1, .section-heading h2, .connect-section h2, .about-grid { font-family: var(--font-sans); }
+
+/* Tistory inline colors must follow the reader's active theme. */
+.article-body .tistory-content,
+.article-body .tistory-content :where(*) {
+  color: inherit !important;
+  background-color: transparent !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+.article-body .tistory-content { color: var(--text-strong) !important; }
+.article-body .tistory-content a { color: var(--accent) !important; }
+.article-body .tistory-content figcaption { color: var(--muted) !important; }
+.article-body .tistory-content pre,
+.article-body .tistory-content blockquote { background-color: var(--surface) !important; }
+.article-body .tistory-content code:not(pre code),
+.article-body .tistory-content mark { background-color: var(--surface-2) !important; }
+
 .site-footer { padding: 1.3rem clamp(1rem, 5vw, 5rem); }
 .about-modal__backdrop { animation: portfolio-modal-fade .2s ease-out; }
 .about-modal__panel { animation: portfolio-modal-rise .25s ease-out; }
